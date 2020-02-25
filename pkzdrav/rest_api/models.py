@@ -8,7 +8,7 @@ class Directory(models.Model):
     short_name = models.CharField(max_length=250, verbose_name='Короткое наименование')
     description = models.TextField(blank=True, verbose_name='Описание')
     version = models.CharField(max_length=250, blank=False, unique=True, verbose_name='Версия')
-    start_date = models.DateField(auto_now_add=True, editable=True, db_index=True, verbose_name='Дата начала действия версии')
+    start_date = models.DateField(verbose_name='Дата начала действия версии')
 
     class Meta:
         """Преобразует вывод в панели администратора"""
