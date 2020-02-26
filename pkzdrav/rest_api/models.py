@@ -3,18 +3,18 @@ from django.db import models
 # Create your models here.
 class Directory(models.Model):
     """Модель справочника"""
-    id = models.AutoField(primary_key=True) #идентификатор справочника
+    directory_id = models.IntegerField(default=0, verbose_name='Идентификатор справочника')
     name = models.CharField(max_length=250, verbose_name='Наименование')
     short_name = models.CharField(max_length=250, verbose_name='Короткое наименование')
     description = models.TextField(blank=True, verbose_name='Описание')
-    version = models.CharField(max_length=250, blank=False, unique=True, verbose_name='Версия')
+    version = models.CharField(max_length=250, blank=False, verbose_name='Версия')
     start_date = models.DateField(verbose_name='Дата начала действия версии')
 
     class Meta:
-        """Преобразует вывод в панели администратора"""
+        """Преобразует вывод в панели администратора в удобочитаемый"""
         verbose_name_plural = 'Справочники'
         verbose_name = 'Справочник'
-        ordering = ['short_name']
+        unique_together = ('directory_id', 'version')  #Определяет уникальную совокупность полей
 
     def __str__(self):
         return self.name
@@ -25,7 +25,7 @@ class Unit(models.Model):
     """Модель элемента справочника"""
     id = models.AutoField(primary_key=True) #идентификатор элемента
     directory = models.ForeignKey(Directory, on_delete=models.CASCADE, verbose_name = 'родительский справочник')
-    parent_id = Directory.id  #родительский идентификатор
+    parent_id = Directory.directory_id  #родительский идентификатор
     code = models.CharField(max_length=250, blank=False, verbose_name='Код элемента')
     value = models.CharField(max_length=250, blank=False, verbose_name='Значение элемента')
 
