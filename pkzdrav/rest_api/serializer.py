@@ -1,5 +1,9 @@
 from rest_framework import serializers
 
+"""Предназначен для форматирования данных из базы в формат REST API. Объявленные классы соответствуют моделям, поля 
+аналогичны. Поле TextField заменяется на CharField без указания максимальной длины. Названия атрибутов
+соответствуют таковым у преобразуемой модели."""
+
 class DirectodySerializer(serializers.Serializer):
     directory_id = serializers.IntegerField()
     name = serializers.CharField(max_length=250)
