@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 class Directory(models.Model):
     """Модель справочника"""
+    id = models.AutoField(primary_key=True)
     directory_id = models.IntegerField(default=0, verbose_name='Идентификатор справочника')
     name = models.CharField(max_length=250, verbose_name='Наименование')
     short_name = models.CharField(max_length=250, verbose_name='Короткое наименование')
@@ -25,7 +26,7 @@ class Unit(models.Model):
     """Модель элемента справочника"""
     id = models.AutoField(primary_key=True) #идентификатор элемента
     directory = models.ForeignKey(Directory, on_delete=models.CASCADE, verbose_name = 'родительский справочник')
-    parent_id = Directory.directory_id  #родительский идентификатор
+    parent_id = Directory.id #родительский идентификатор
     code = models.CharField(max_length=250, blank=False, verbose_name='Код элемента')
     value = models.CharField(max_length=250, blank=False, verbose_name='Значение элемента')
 

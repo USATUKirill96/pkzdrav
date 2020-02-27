@@ -11,3 +11,9 @@ class DirectodySerializer(serializers.Serializer):
     description = serializers.CharField()
     version = serializers.CharField(max_length=250)
     start_date = serializers.DateField()
+
+class UnitSerializer(serializers.Serializer):
+    id = serializers.CharField()  # идентификатор элемента
+    parent_id = serializers.CharField()  # родительский идентификатор
+    code = serializers.CharField(max_length=250)
+    value = serializers.CharField(max_length=250)
