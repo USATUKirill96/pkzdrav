@@ -10,9 +10,9 @@ class Directory_admin(admin.ModelAdmin):
 
 @admin.register(Unit)
 class Unit_admin(admin.ModelAdmin):
-    list_display = ('id', 'parent_id', 'code', 'value') #атрибуты в списке объектов
-    list_display_links = ('id', 'code') #поля-ссылки
-    search_fields = ('id',) #поля, по которым будет осуществляться поиск
+    list_display = ('id', 'directory', 'code', 'value') #атрибуты в списке объектов
+    list_display_links = ('id', 'code', 'directory') #поля-ссылки
+    search_fields = ('code',) #поля, по которым будет осуществляться поиск
     raw_id_fields = ("directory",) #Добавляет возможность выбрать родительский справочник, пользуясь поиском
     list_filter = ('directory', )  #фильтрация значений по принадлежности к директории
 

@@ -18,7 +18,7 @@ class Directory(models.Model):
         unique_together = ('directory_id', 'version')  #Определяет уникальную совокупность полей
 
     def __str__(self):
-        return self.name
+        return f"Справочник {self.name}, идентификатор {self.directory_id}, версия {self.version}"
 
 
 

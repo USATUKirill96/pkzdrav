@@ -7,7 +7,7 @@ from django.http import Http404
 from .models import Directory, Unit
 from .serializer import DirectodySerializer, UnitSerializer
 
-def pagination(request, object_list, objects_per_page=10):
+def pagination(request, object_list, objects_per_page=5):
     """Функция разбивки объекты на страницы. Принимает реквест для определения
     номера страницы, список объектов и число объектов на страницу (стандартно 10)"""
     paginator = Paginator(object_list, objects_per_page)
@@ -55,20 +55,31 @@ class UnitView(APIView):
 
         return id, version, action
 
-    def validate(self, id, version):
+    def validate(self, directory_id, version, request):
         """Валидация элементов справочника"""
-        units_list=Unit.objects.all()
-        return units_list
+        try:
+            id = request.GET.get('code')
+            value = request.GET.get('value')
+        except:
+            raise Http404
+
+        tested_elements = self.pull(directory_id, version) #Обращение к функции pull для получения списка элементов
+        for unit in tested_elements: #Поиск совпадения кода элемента с его значением
+            if unit.code == id and unit.value == value:
+                return True
+        return False
+
+
 
     def pull(self, id, version):
-        """Получение элементов справочника"""
-        if version == 'actual':
+        """Получение элементов справочника. Сначала отыскивается идентификатор справочника по заданным критериям"""
+        if version == 'actual': #Действия при поиске актуального справочника
             actual_version_object = Directory.objects.filter(directory_id=id).order_by('version').last()
             parent_id = actual_version_object.id
-        else:
+        else: #Действия при поиске конкретного справочника
             requested_version_object = Directory.objects.get(version=version, directory_id=id)
             parent_id = requested_version_object.id
-
+        #После нахождения айдти справочника, выбираются его дочерние элементы
         elements_list = Unit.objects.filter(directory__id=parent_id)
         return elements_list
 
@@ -76,13 +87,15 @@ class UnitView(APIView):
 
 
     def get(self, request):
+        #Проверяется значение атрибута action для разграничения действий по валидации и получению списка
         id, version, action = self.get_atributes(request)
         if action == 'get':
-            answer = self.pull(id, version)
+            answer = self.pull(id=id, version=version)
+            elements = pagination(request, answer)
+            serializer = UnitSerializer(elements, many=True)
+            return Response({"Units": serializer.data})
         elif action == 'validate':
-            answer = self.validate(id, version)
+            answer = self.validate(directory_id=id, version=version, request=request)
+            return Response({"Validation":answer})
         else:
             raise Http404
-        elements = pagination(request, answer)
-        serializer = UnitSerializer(elements, many=True)
-        return Response({"Units":serializer.data})
